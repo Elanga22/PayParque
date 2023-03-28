@@ -1,0 +1,3 @@
+ID, Proprietario, Matricula, Marca, Modelo,Chassis,Estacao, Lugar, Hora-Entrada, Hora-Saida, Duracao,Contrato, Totalpago,Data
+1/ Elias Manuel/ AFUG-691 MC/ TOYOTA/ Toyota D4D/ 1012910T/ Rotativo/P6/ 23:30 da tarde/ 01:00 da manhã/ null/3408.00 MT/ 13/11/2022
+2/ Arnaldo Sitoe/AFW-461 MC/ null/   Mazda BT-50/ / ***/  P16/  23:35 da tarde/ null/ / Mensal/ 8000/ 14-11-2022

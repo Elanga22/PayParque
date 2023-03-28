@@ -1,0 +1,2 @@
+ID, Proprietario, Matricula, Marca, Modelo,Estacao, Lugar, Hora-Entrada, Hora-Saida, Permanenca, Totalpago
+11/CELSA MBOANE/ABU-350 MC/ TOYOTA/ SUPER-GEL/Rotativo/ P6/ 22:37 da tarde/02:38 da tarde/2:36/800 MT10/Salvador Costa/ABHJ-201 MP/ NISSAN/ GTR-Nismo 58/ Normal/ P2/ 20:29 da tarde/ 21:45 da tarde/1:24/100

@@ -1,0 +1,7 @@
+ID,Proprietario, Matricula, Marca, Modelo, Estacao, Lugar, Hora-Entrada,Contracto, Referencia, Data
+10/Salvador Costa/ ABHJ-201 MP/ NISSAN/ GTR-Nismo 58/ Normal/ P2/ 20:29 da tarde/ 21:45 da tarde/null/null 
+11/CELSA MBOANE/ ABU-350 MC/ TOYOTA/ SUPER-GEL/ Rotativo/ P6/ 22:37 da tarde/ null/null/null		   
+12/Ana Tembe/ ALB-412 MP/ TOYOTA/ VITZ/ Normal/ P14/ 22:38 da tarde/ null/null/null			   
+13/Eduardo Costa/ AAJ-471 MP/ MITSUBIX/ LAXER-EVOLUTION T5/ Rotativo/ P3/ 09:40 da tarde/ //13-11-2022
+14/Bernardo Manuel/ AJL-490 MC/ MAHINDRA/ MAHINDRA LV/ Normal/ P7/ 21:50 da tarde/ //13-11-2022
+15/ Arnaldo Sitoe/  AFW-461 MC/ Mazda/  Mazda BT-50/ VIP/ P16/ 23:35 da tarde/Mensal/2022PAY110/13-11-2022
