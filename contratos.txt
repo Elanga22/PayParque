@@ -1,3 +1,5 @@
 Codigo-Contracto, Proprietario, Genero, Nº-Documento, Nacionalidade, Telefone, Categoria, Marca, Modelo, Motor, Caixa, Combustivel, Chassis, Tipo, Ano-fabrico,Matricula
 2022PAY110/ Arnaldo Sitoe/ M/ 110685831F/ Moçambicana/ +2588640221407/ Mensal/Mazda/ Mazda BT-50/ V6/ Automatico/ Disel/ 174113G/ Cabine de 4-Portas/ 2010/ AFW-461 MC
 2022PAY120/Santos Miranda/ M/ 100216548A/ Mozambique/ +2588401223/ Semanal/ Nissan/ GTR-Nismo/ Disel/ Manual/ Gasoleo/ 877712GT/Turismo/ 2010/ ALN-816 MC
+ 2023PAY130/Elisa Eduardo/ F/ 10122210/ Mozambique/ 87411012/ Semanal/ TOYOTA / RUNX 2010/ Disel/ Automatica/ Gasoleo/ 1677784/Turismo/ 2010/ AFE-351
+****/Virgilo/ M/ 100124554/ Mozambique/ 87542121/ Semanal/ Toyota/ Vitz/ Disel/ Automatica/ Gasoleo/ 12215420/Turismo/ 200012/ UPL458522

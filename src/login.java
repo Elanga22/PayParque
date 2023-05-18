@@ -1,9 +1,14 @@
 
+import Querys.conexao;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.io.FileNotFoundException;
+import java.sql.Connection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -11,12 +16,22 @@ import java.util.logging.Logger;
  */
 
 /**
+ * 
  *
  * @author SNdzekos
  * 
  * 
  */
 public class login extends javax.swing.JFrame {
+    
+ //PREPARANDO OS OBJECTOS DE RESULT SET, PREPARETSTATEMENT, E CONNECTION
+    
+    Connection con;
+    PreparedStatement pst;
+    ResultSet rs;
+     String prl="";
+    
+  
 
     /**
      * Creates new form login
@@ -24,8 +39,54 @@ public class login extends javax.swing.JFrame {
     public login() {
         initComponents();
         setIconApp();
+        
+       
+      
+       
+              
+        
     }
 
+    
+    //carregar o perfile do utilizador
+    void getUserProfile(){
+       
+        try {
+            con=conexao.getConnection(); //Objecto de conexao.
+           //pst=con.prepareStatement("select*from utilizadores where utilizador=? and senha=?");
+        
+           String sql="Select perfile from utilizadores where utilizador=? and senha=?";
+           PreparedStatement pst;
+           
+           //Connection con= ModeloConexao.getConnection();
+           pst=con.prepareStatement(sql);
+            pst.setString(1, txtUsuario.getText());
+           pst.setString(2, txtPassword.getText());
+           ResultSet rs=pst.executeQuery();
+           
+           if(rs.next()){
+               
+               
+           prl=(rs.getString("perfile"));
+               //JOptionPane.showMessageDialog(null, "find : "+prl);
+               
+           }
+    }catch(Exception ex){
+        
+        
+        JOptionPane.showMessageDialog(null, ex);
+    }
+        
+    }
+    /*
+    CONEXÃO COM BASE DE DADOS
+    
+    */
+    
+   
+
+    
+    
     public static void acessar(){
         String usuario,perfile, senhaPadrao="12345A";
         usuario="admin";
@@ -272,7 +333,73 @@ public class login extends javax.swing.JFrame {
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
         //BUTAO DE ACESSO AO SISTEMA.
+        String usuario=txtUsuario.getText();
+        String password=txtPassword.getText();
         
+        if(usuario.equals("")|| password.equals("")){
+           
+            JOptionPane.showMessageDialog(null, "Please enter the correct username and password");
+        }else{
+            
+        }
+        //Criar objectos
+        
+        //Conection with MS Access
+      
+ 
+       try{
+           String psts;
+           
+           con=conexao.getConnection(); //Objecto de conexao.
+           pst=con.prepareStatement("select*from utilizadores where utilizador=? and senha=?");
+           pst.setString(1, usuario);
+           pst.setString(2, password);
+           
+           //String perfileAtivo=(pst=con.prepareStatement("select perfile from  utilizadores where utilizador=? and senha=?")).toString();
+           rs=pst.executeQuery();
+           if(rs.next()){
+               
+               //JOptionPane.showMessageDialog(rootPane, "Bem vindo !");
+                 lblNotification.setForeground(Color.green);
+               lblNotification.setText("Bem Vindo ao sistema PAYPARQUE");
+               //JOptionPane.showMessageDialog(rootPane, perfileAtivo);
+               //Perfile do utilizador
+               
+               getUserProfile();
+              // JOptionPane.showMessageDialog(null, "Dentro do sistema.");
+               
+               
+               
+             menu telaMenu;
+        try {
+            telaMenu = new menu(usuario,   prl);
+            telaMenu.setVisible(true);
+            setVisible(false);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+               
+               
+   
+                          }else{
+               
+               lblNotification.setForeground(Color.red);
+               lblNotification.setText("Dados de acesso invalidos !");
+           }
+           
+       }catch(Exception ex){
+           
+           JOptionPane.showMessageDialog(rootPane, ex);
+       }
+        
+        
+        
+        
+        
+        
+        
+        //Old form de conexao
+        /*
         if(!txtUsuario.getText().equals("") || !txtPassword.getText().equals("")){
          
           Utilizadores();
@@ -280,7 +407,7 @@ public class login extends javax.swing.JFrame {
             lblLGNotif.setText("Utilizador ou senha invalida");
         }
         
-        
+        */
        
          
             

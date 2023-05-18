@@ -1,5 +1,6 @@
 
 
+import Querys.conexao;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Scrollbar;
@@ -16,6 +17,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +30,7 @@ import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.midi.SoundbankResource;
@@ -34,6 +39,9 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import java.sql.ResultSetMetaData;
+
+
 
 
 /*
@@ -48,6 +56,21 @@ import javax.swing.table.TableModel;
  
 
 public class menu extends javax.swing.JFrame {
+    
+    //Metodo onload Utilizadores table
+   
+    
+   // listUtilizadores();
+    
+    
+    //OBJECTO DA CONEXAO 
+      Connection con;
+    PreparedStatement pst;
+    ResultSet rs;
+    
+    //PERFILE PARA NOVO UTILIZADOR
+    static String newProfile;
+    
     
    static  String vagaP;
    static String sendAction="";
@@ -89,9 +112,15 @@ public void contaLinha(){
         Logger.getLogger(menu.class.getName()).log(Level.SEVERE, null, ex);
     }
     
-    
+   
     
 }
+
+
+        
+
+
+
 public void pegaLinhaIndex() throws FileNotFoundException{
     File ficheiroC=new File("entradasSaidas.txt");
     String IDA; //o id dos dados
@@ -658,6 +687,7 @@ public void saveParking(){
     CardLayout cardLayouts;
     public menu(String ONL, String perl ) throws FileNotFoundException {
         initComponents();
+        listUtilizadores();
         onlineUser=ONL;
         perfileUtilizador=perl;
        lblLogedUser.setText(onlineUser);
@@ -751,6 +781,7 @@ public void saveParking(){
     rdVaga_P5.setEnabled(false);
     rdVaga_P1.setEnabled(false);
     }
+
 
 
 public static void TempoPermanenca(){
@@ -1824,6 +1855,96 @@ PnButtonRegistarDefinicoes.setVisible(false);
          rdVaga_P20.setVisible(true);
      }
  }
+ 
+ //Metodo para registar utilizadores
+ 
+ public void registNewUser(){
+     
+     
+ 
+    if (lblBox3.getText().equalsIgnoreCase("Matched password")){
+        
+        
+        JOptionPane.showMessageDialog(null, "Pode Salvar !");
+  
+         
+         
+     try{
+         con=conexao.getConnection(); //objecto da conexao 
+     pst=con.prepareStatement("insert into utilizadores (nome,utilizador, senha, perfile)values(?,?,?,?)");
+     
+     pst.setString(1, txtNomeUsuario.getText());
+     pst.setString(2, txtUser.getText());
+     pst.setString(3, txtSenhaUser.getText());
+     pst.setString(4, perfile_User.getSelection().toString());
+     
+     pst.execute();
+     txtNomeUsuario.setFocusable(true);
+         //JOptionPane.showMessageDialog(null, "Novo utilizador registado !");
+         listUtilizadores();
+         
+         
+         //Limpar os campos
+         txtNomeUsuario.setText("");
+         txtUser.setText("");
+         txtSenhaUser.setText("");
+         newProfile="";
+         txtNomeUsuario.setFocusable(true);
+         
+         
+        
+ 
+     }catch(Exception ex){
+         
+         JOptionPane.showMessageDialog(null, "Error:"+ex);
+     }
+
+         
+     
+    
+      }else{
+        
+        JOptionPane.showMessageDialog(null, "Nao Pode Salvar !");
+    }
+       
+ }
+      
+ //METODO PARA FILTRAR OS DADOS DO UTILIZADOR
+public void listUtilizadores(){
+    int c;
+  
+     try{
+         con=conexao.getConnection();
+         
+         
+         pst=con.prepareStatement("select * from utilizadores");
+        rs=pst.executeQuery();
+      
+        ResultSetMetaData rsd= rs.getMetaData();
+        c=rsd.getColumnCount();
+       DefaultTableModel dft=(DefaultTableModel)tbListUsers.getModel();
+       dft.setRowCount(0);
+        while(rs.next()){
+            Vector v2= new Vector();
+            for(int i=1; i<=c; i++){
+                v2.add(rs.getString("ID"));
+                 v2.add(rs.getString("nome"));
+                  v2.add(rs.getString("utilizador"));
+                   v2.add(rs.getString("perfile"));
+                
+            }
+            dft.addRow(v2);
+            
+        }
+     }catch(Exception ex){
+    
+         
+         JOptionPane.showMessageDialog(null, "Error:"+ex);
+     }     
+     
+    
+    
+}
          
  
  
@@ -1842,6 +1963,7 @@ PnButtonRegistarDefinicoes.setVisible(false);
         genderContracts = new javax.swing.ButtonGroup();
         histryOption = new javax.swing.ButtonGroup();
         choseIDSaidas = new javax.swing.ButtonGroup();
+        perfile_User = new javax.swing.ButtonGroup();
         jSplitPane1 = new javax.swing.JSplitPane();
         jPanel3 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
@@ -2008,13 +2130,35 @@ PnButtonRegistarDefinicoes.setVisible(false);
         jLabel3 = new javax.swing.JLabel();
         jLabel63 = new javax.swing.JLabel();
         jLabel64 = new javax.swing.JLabel();
-        lblFluxo = new javax.swing.JLabel();
         jLabel65 = new javax.swing.JLabel();
         jLabel66 = new javax.swing.JLabel();
         jLabel67 = new javax.swing.JLabel();
         jLabel68 = new javax.swing.JLabel();
         jLabel69 = new javax.swing.JLabel();
         lblDashViaturas = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tbListUsers = new javax.swing.JTable();
+        lblPassword = new javax.swing.JLabel();
+        txtSenhaUser = new javax.swing.JTextField();
+        lblNomeUsuario = new javax.swing.JLabel();
+        txtNomeUsuario = new javax.swing.JTextField();
+        lblUserNome = new javax.swing.JLabel();
+        txtUser = new javax.swing.JTextField();
+        rdGestor = new javax.swing.JRadioButton();
+        rdFuncionario = new javax.swing.JRadioButton();
+        rdAdmin = new javax.swing.JRadioButton();
+        btnDeleteUser = new javax.swing.JButton();
+        lblBox1 = new javax.swing.JLabel();
+        lblBox2 = new javax.swing.JLabel();
+        lblBox3 = new javax.swing.JLabel();
+        btnSaveUser = new javax.swing.JButton();
+        btnEditeUser = new javax.swing.JButton();
+        jLabel73 = new javax.swing.JLabel();
+        btnRefreshUsers = new javax.swing.JButton();
+        txtValidateSenha = new javax.swing.JTextField();
+        lblPassword1 = new javax.swing.JLabel();
+        lblFluxo1 = new javax.swing.JLabel();
+        lblBox4 = new javax.swing.JLabel();
         PnlCard5 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jLabel48 = new javax.swing.JLabel();
@@ -2058,7 +2202,7 @@ PnButtonRegistarDefinicoes.setVisible(false);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(1000, 630));
-        setPreferredSize(new java.awt.Dimension(1000, 634));
+        setPreferredSize(new java.awt.Dimension(1000, 664));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -2073,7 +2217,7 @@ PnButtonRegistarDefinicoes.setVisible(false);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 230, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3163,8 +3307,9 @@ PnButtonRegistarDefinicoes.setVisible(false);
         PnlCardLayouts.add(PnlCard1, "card1");
 
         PnlCard6.setBackground(new java.awt.Color(255, 255, 255));
+        PnlCard6.setMinimumSize(new java.awt.Dimension(740, 640));
         PnlCard6.setName("PlnCard5"); // NOI18N
-        PnlCard6.setPreferredSize(new java.awt.Dimension(690, 640));
+        PnlCard6.setPreferredSize(new java.awt.Dimension(740, 640));
         PnlCard6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel6.setBackground(new java.awt.Color(204, 0, 51));
@@ -3189,57 +3334,169 @@ PnButtonRegistarDefinicoes.setVisible(false);
         });
         jPanel6.add(jLabel62, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 0, 60, 50));
 
-        PnlCard6.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 700, -1));
+        PnlCard6.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 740, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/menu/utilizadores.png"))); // NOI18N
-        jLabel3.setText("   UTILIZADORES :");
-        PnlCard6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 150, 190, 90));
+        jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        PnlCard6.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 460, 80, 80));
 
         jLabel63.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
         jLabel63.setForeground(new java.awt.Color(102, 102, 102));
         jLabel63.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/menu/contratos.png"))); // NOI18N
-        jLabel63.setText("  CONTRATOS       :");
-        PnlCard6.add(jLabel63, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 240, 180, 110));
+        jLabel63.setText("REGISTAR NOVO UTILIZADOR ");
+        PnlCard6.add(jLabel63, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, 320, 50));
 
         jLabel64.setFont(new java.awt.Font("Segoe UI Semibold", 1, 36)); // NOI18N
         jLabel64.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel64.setText("11");
-        PnlCard6.add(jLabel64, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 250, 80, 70));
-
-        lblFluxo.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Estatistica :", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12), new java.awt.Color(102, 102, 102))); // NOI18N
-        PnlCard6.add(lblFluxo, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 630, 260));
+        PnlCard6.add(jLabel64, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 530, 90, 70));
 
         jLabel65.setFont(new java.awt.Font("Segoe UI Semibold", 1, 36)); // NOI18N
         jLabel65.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel65.setText("6");
-        PnlCard6.add(jLabel65, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 166, 80, 60));
+        PnlCard6.add(jLabel65, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 520, 80, 80));
 
         jLabel66.setFont(new java.awt.Font("Segoe UI Semibold", 1, 12)); // NOI18N
         jLabel66.setForeground(new java.awt.Color(102, 102, 102));
         jLabel66.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/menu/viaturasEstacionadas.png"))); // NOI18N
-        jLabel66.setText("ESTACIONADAS :");
-        PnlCard6.add(jLabel66, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 490, 190, 60));
+        PnlCard6.add(jLabel66, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 480, 70, 60));
 
         jLabel67.setFont(new java.awt.Font("Segoe UI Semibold", 1, 12)); // NOI18N
         jLabel67.setForeground(new java.awt.Color(102, 102, 102));
         jLabel67.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/menu/viaturasRegistadas.png"))); // NOI18N
-        jLabel67.setText("      REGISTADAS  :");
-        PnlCard6.add(jLabel67, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 420, 200, 50));
+        PnlCard6.add(jLabel67, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 490, 70, 50));
 
         jLabel68.setFont(new java.awt.Font("Segoe UI Semibold", 1, 36)); // NOI18N
         jLabel68.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel68.setText("9");
-        PnlCard6.add(jLabel68, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 480, 100, 70));
+        PnlCard6.add(jLabel68, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 540, 70, 50));
 
         jLabel69.setFont(new java.awt.Font("Segoe UI Semibold", 1, 36)); // NOI18N
         jLabel69.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel69.setText("24");
-        PnlCard6.add(jLabel69, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 410, 100, 70));
+        PnlCard6.add(jLabel69, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 540, 60, 50));
 
         lblDashViaturas.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Viaturas", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12), new java.awt.Color(102, 102, 102))); // NOI18N
-        PnlCard6.add(lblDashViaturas, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 380, 630, 200));
+        PnlCard6.add(lblDashViaturas, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 460, 630, 150));
+
+        tbListUsers.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Nome", "Utilizador", "Perfile"
+            }
+        ));
+        jScrollPane4.setViewportView(tbListUsers);
+
+        PnlCard6.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 120, 290, 330));
+
+        lblPassword.setText("Nova senha/New password");
+        PnlCard6.add(lblPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 260, 160, -1));
+        PnlCard6.add(txtSenhaUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 280, 280, 30));
+
+        lblNomeUsuario.setText("Nome Completo");
+        PnlCard6.add(lblNomeUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 150, 120, -1));
+        PnlCard6.add(txtNomeUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 170, 280, 30));
+
+        lblUserNome.setText("Utilizador/Username");
+        PnlCard6.add(lblUserNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 210, 120, -1));
+        PnlCard6.add(txtUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 230, 280, 30));
+
+        perfile_User.add(rdGestor);
+        rdGestor.setText("Gestor");
+        rdGestor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdGestorActionPerformed(evt);
+            }
+        });
+        PnlCard6.add(rdGestor, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 370, 70, -1));
+
+        perfile_User.add(rdFuncionario);
+        rdFuncionario.setText("Funcionario");
+        rdFuncionario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdFuncionarioActionPerformed(evt);
+            }
+        });
+        PnlCard6.add(rdFuncionario, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 370, 90, -1));
+
+        perfile_User.add(rdAdmin);
+        rdAdmin.setText("Admin");
+        rdAdmin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdAdminActionPerformed(evt);
+            }
+        });
+        PnlCard6.add(rdAdmin, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 370, 70, -1));
+
+        btnDeleteUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/deletar.png"))); // NOI18N
+        btnDeleteUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteUserActionPerformed(evt);
+            }
+        });
+        PnlCard6.add(btnDeleteUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 400, 80, 40));
+        PnlCard6.add(lblBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 150, 150, 20));
+
+        lblBox2.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        PnlCard6.add(lblBox2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 210, 150, 20));
+
+        lblBox3.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        PnlCard6.add(lblBox3, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 310, 120, 20));
+
+        btnSaveUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/guardar.png"))); // NOI18N
+        btnSaveUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveUserActionPerformed(evt);
+            }
+        });
+        PnlCard6.add(btnSaveUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 400, 80, 40));
+
+        btnEditeUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/editarContract.png"))); // NOI18N
+        btnEditeUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditeUserActionPerformed(evt);
+            }
+        });
+        PnlCard6.add(btnEditeUser, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 400, 80, 40));
+
+        jLabel73.setFont(new java.awt.Font("Segoe UI Semibold", 1, 14)); // NOI18N
+        jLabel73.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel73.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/menu/contratos.png"))); // NOI18N
+        PnlCard6.add(jLabel73, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 480, 50, 50));
+
+        btnRefreshUsers.setText("Refresh");
+        btnRefreshUsers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshUsersActionPerformed(evt);
+            }
+        });
+        PnlCard6.add(btnRefreshUsers, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 80, 290, -1));
+
+        txtValidateSenha.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtValidateSenhaActionPerformed(evt);
+            }
+        });
+        txtValidateSenha.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtValidateSenhaKeyPressed(evt);
+            }
+        });
+        PnlCard6.add(txtValidateSenha, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 330, 280, 30));
+
+        lblPassword1.setText("Senha/Passowrd");
+        PnlCard6.add(lblPassword1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 310, 120, -1));
+
+        lblFluxo1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Estatistica :", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 12), new java.awt.Color(102, 102, 102))); // NOI18N
+        PnlCard6.add(lblFluxo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, 330, 340));
+
+        lblBox4.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        PnlCard6.add(lblBox4, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 260, 120, 20));
 
         PnlCardLayouts.add(PnlCard6, "card6");
 
@@ -4010,6 +4267,109 @@ JOptionPane.showConfirmDialog(this, "Novo contracto registado com sucesso !");
         // TODO add your handling code here:
          geraEstacoes();
     }//GEN-LAST:event_cmbEstacaoItemStateChanged
+
+    private void rdAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdAdminActionPerformed
+     newProfile="Admin";  
+        
+        
+        
+        
+    }//GEN-LAST:event_rdAdminActionPerformed
+
+    private void rdFuncionarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdFuncionarioActionPerformed
+         newProfile="Funcionario";  
+         
+    }//GEN-LAST:event_rdFuncionarioActionPerformed
+
+    private void rdGestorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdGestorActionPerformed
+         newProfile="Gestor";  
+    }//GEN-LAST:event_rdGestorActionPerformed
+
+    private void btnDeleteUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteUserActionPerformed
+        // TODO add your handling code here:
+        
+        
+     
+        
+        
+        
+    }//GEN-LAST:event_btnDeleteUserActionPerformed
+
+    private void btnSaveUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveUserActionPerformed
+        // TODO add your handling code here:
+     
+        //Verificar os campos
+        if (txtNomeUsuario.getText().equals("") || txtUser.getText().equals("")|| txtValidateSenha.getText().equals("")){
+            
+            
+            
+           JOptionPane.showMessageDialog(null, "Todos os campos são obrigatorios...");
+            
+        
+            
+        }else{
+            
+             registNewUser();
+            
+            
+        }
+        
+         
+           //PRIMEIRO VERIFICAR SE OS CAMPOS ESTAM PREENCHIDOS
+       
+    }//GEN-LAST:event_btnSaveUserActionPerformed
+
+    private void btnEditeUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditeUserActionPerformed
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEditeUserActionPerformed
+
+    private void btnRefreshUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshUsersActionPerformed
+        // TODO add your handling code here:
+        
+        listUtilizadores();
+    }//GEN-LAST:event_btnRefreshUsersActionPerformed
+
+    private void txtValidateSenhaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtValidateSenhaKeyPressed
+        // TODO add your handling code here:
+        //Mutch  the password
+        
+        if (txtSenhaUser.getText().equals("")||txtValidateSenha.getText().equals("")){
+         
+            lblBox3.setForeground(Color.red);
+            lblBox3.setText("Match not Password");
+            lblBox4.setForeground(Color.red);
+            lblBox4.setText("Empty field");
+            
+            
+        }else if(txtSenhaUser.getText().equals(txtValidateSenha.getText())){
+         
+        
+            lblBox3.setForeground(Color.green);
+            lblBox3.setText("Matched Password");
+            lblBox4.setForeground(Color.green);
+            lblBox4.setText("Matched Password");
+            
+            
+        }else{
+            
+            
+            lblBox3.setForeground(Color.red);
+            lblBox3.setText("Password not Match");
+            lblBox4.setForeground(Color.red);
+            lblBox4.setText("Matched not Password");
+            
+            
+        }
+  
+        
+        
+        
+    }//GEN-LAST:event_txtValidateSenhaKeyPressed
+
+    private void txtValidateSenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtValidateSenhaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtValidateSenhaActionPerformed
     
         
     /**
@@ -4073,6 +4433,8 @@ JOptionPane.showConfirmDialog(this, "Novo contracto registado com sucesso !");
     private javax.swing.JButton btnContract_Editar;
     private javax.swing.JButton btnContract_Guardar;
     private javax.swing.JButton btnContract_LimparCampos;
+    private javax.swing.JButton btnDeleteUser;
+    private javax.swing.JButton btnEditeUser;
     private javax.swing.JButton btnFindViatura;
     private javax.swing.JButton btnHistryPrint;
     private javax.swing.JButton btnListrar;
@@ -4081,8 +4443,10 @@ JOptionPane.showConfirmDialog(this, "Novo contracto registado com sucesso !");
     private javax.swing.JButton btnPushHistyModeloMarca;
     private javax.swing.JButton btnPushHistyPushData;
     private javax.swing.JButton btnPushHistyRF;
+    private javax.swing.JButton btnRefreshUsers;
     private javax.swing.JButton btnRegistEntrada;
     private javax.swing.JButton btnRegist_EditDados;
+    private javax.swing.JButton btnSaveUser;
     private javax.swing.JButton btnSearchVeiculo;
     private javax.swing.JButton btnShowData;
     private javax.swing.ButtonGroup choseIDSaidas;
@@ -4162,6 +4526,7 @@ JOptionPane.showConfirmDialog(this, "Novo contracto registado com sucesso !");
     private javax.swing.JLabel jLabel68;
     private javax.swing.JLabel jLabel69;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel73;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -4172,9 +4537,14 @@ JOptionPane.showConfirmDialog(this, "Novo contracto registado com sucesso !");
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel lblAuxiliarSaida;
+    private javax.swing.JLabel lblBox1;
+    private javax.swing.JLabel lblBox2;
+    private javax.swing.JLabel lblBox3;
+    private javax.swing.JLabel lblBox4;
     private javax.swing.JLabel lblControlos;
     private javax.swing.JLabel lblDadosViatura;
     private javax.swing.JLabel lblDashViaturas;
@@ -4183,7 +4553,7 @@ JOptionPane.showConfirmDialog(this, "Novo contracto registado com sucesso !");
     private javax.swing.JLabel lblDocSaidas;
     private javax.swing.JLabel lblESTCAO;
     private javax.swing.JLabel lblExitSideEntradasSaidas;
-    private javax.swing.JLabel lblFluxo;
+    private javax.swing.JLabel lblFluxo1;
     private javax.swing.JLabel lblFoundLine;
     private javax.swing.JLabel lblGeneroContract;
     private javax.swing.JLabel lblHoraEntrada;
@@ -4192,9 +4562,12 @@ JOptionPane.showConfirmDialog(this, "Novo contracto registado com sucesso !");
     private javax.swing.JLabel lblLogedUser;
     private javax.swing.JLabel lblLogoMenu;
     private javax.swing.JLabel lblMovimentoHistyrControlo;
+    private javax.swing.JLabel lblNomeUsuario;
     private javax.swing.JLabel lblOpcaoConsulta;
     private javax.swing.JLabel lblOperation;
     private javax.swing.JLabel lblParqueAux;
+    private javax.swing.JLabel lblPassword;
+    private javax.swing.JLabel lblPassword1;
     private javax.swing.JLabel lblPayments;
     private javax.swing.JLabel lblProprietarioDados;
     private javax.swing.JLabel lblReferenciaValid;
@@ -4202,15 +4575,20 @@ JOptionPane.showConfirmDialog(this, "Novo contracto registado com sucesso !");
     private javax.swing.JLabel lblTaxaUnic;
     private javax.swing.JLabel lblTaxaUnicaPY;
     private javax.swing.JLabel lblTimeRGST;
+    private javax.swing.JLabel lblUserNome;
     private javax.swing.JLabel lblViaturaDatas;
     private javax.swing.JLabel lblcatchedREF;
     private javax.swing.JLabel lblchosseParque;
     private javax.swing.JLabel lblprofileLoged;
     private javax.swing.ButtonGroup parqueGrupo;
+    private javax.swing.ButtonGroup perfile_User;
+    private javax.swing.JRadioButton rdAdmin;
     private javax.swing.JRadioButton rdEntrada;
     private javax.swing.JRadioButton rdFeacthMatricula;
     private javax.swing.JRadioButton rdFeacthREF;
     private javax.swing.JRadioButton rdFemenino;
+    private javax.swing.JRadioButton rdFuncionario;
+    private javax.swing.JRadioButton rdGestor;
     private javax.swing.JRadioButton rdMasculino;
     private javax.swing.JRadioButton rdSaida;
     private javax.swing.JRadioButton rdVaga_P1;
@@ -4235,6 +4613,7 @@ JOptionPane.showConfirmDialog(this, "Novo contracto registado com sucesso !");
     private javax.swing.JRadioButton rdVaga_P9;
     private javax.swing.JRadioButton rd_histryEntrada;
     private javax.swing.JRadioButton rd_histrySaidas;
+    private javax.swing.JTable tbListUsers;
     private javax.swing.JTable tblMovimento_SaidaEntrada;
     private javax.swing.JTable tblPayments;
     private javax.swing.JTextField txtContractModelo;
@@ -4252,11 +4631,15 @@ JOptionPane.showConfirmDialog(this, "Novo contracto registado com sucesso !");
     private javax.swing.JTextField txtHistryModelo;
     private javax.swing.JTextField txtHistryReferencia;
     private javax.swing.JTextField txtModeloRegist;
+    private javax.swing.JTextField txtNomeUsuario;
     private javax.swing.JTextField txtRegist_Duracao;
     private javax.swing.JTextField txtRegist_Marca1;
     private javax.swing.JTextField txtRegist_Matricula;
     private javax.swing.JTextField txtRegist_NrChassis;
     private javax.swing.JTextField txtRegist_Proprietario;
     private javax.swing.JTextField txtRegist_TotalPagar;
+    private javax.swing.JTextField txtSenhaUser;
+    private javax.swing.JTextField txtUser;
+    private javax.swing.JTextField txtValidateSenha;
     // End of variables declaration//GEN-END:variables
 }
